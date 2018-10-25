@@ -18,9 +18,11 @@ public class CityDB {
         db = context.openOrCreateDatabase(path, Context.MODE_PRIVATE, null);
     }
 
+    //读出城市列表
     public List<City> getAllCity() {
         List<City> list = new ArrayList<City>();
-        Cursor c = db.rawQuery("SELECT * from " + CITY_TABLE_NAME, null);
+        Cursor c = db.rawQuery("SELECT * from " + CITY_TABLE_NAME, null);//查询所有表项
+        //将表项信息写入城市列表
         while (c.moveToNext()) {
             String province = c.getString(c.getColumnIndex("province"));
             String city = c.getString(c.getColumnIndex("city"));
@@ -29,7 +31,8 @@ public class CityDB {
             String allFirstPY = c.getString(c.getColumnIndex("allfirstpy"));
             String firstPY = c.getString(c.getColumnIndex("firstpy"));
             City item = new City(province, city, number, firstPY, allPY, allFirstPY);
-            list.add(item);
+            if(number.substring(5).equals("0100")||(number.substring(7).equals("01")&&number.charAt(4)>'4'))
+                list.add(item);
         }
         return list;
     }

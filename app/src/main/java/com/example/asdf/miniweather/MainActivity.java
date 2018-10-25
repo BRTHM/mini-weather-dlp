@@ -42,6 +42,7 @@ public class MainActivity extends Activity implements OnClickListener{
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
     private ImageView weatherImg, pmImg;
     @SuppressLint("HandlerLeak")
+    //接受子线程传回的天气数据
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
@@ -61,6 +62,7 @@ public class MainActivity extends Activity implements OnClickListener{
         mUpdateBtn.setOnClickListener(this);
         mCitySelect=(ImageView)findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
+        //检查网络
         if(NetUtil.getNetworkState(this)!=NetUtil.NETWORN_NONE)
         {
             Log.d("myweather", "net connected");
@@ -71,9 +73,10 @@ public class MainActivity extends Activity implements OnClickListener{
             Log.d("myweather", "net unconnected");
             Toast.makeText(MainActivity.this,"net unconnected",Toast.LENGTH_LONG).show();
         }
-        initView();
+        initView(); //初始化界面
     }
 
+    //初始化控件
     void initView() {
         city_name_Tv = (TextView) findViewById(R.id.title_city_name);
         cityTv = (TextView) findViewById(R.id.city);
@@ -101,11 +104,13 @@ public class MainActivity extends Activity implements OnClickListener{
 
     @Override
     public void onClick(View v) {
+        //选择城市
         if (v.getId()==R.id.title_city_manager)
         {
             Intent i = new Intent(this,SelectCity.class);
             startActivityForResult(i,1);
         }
+        //更新天气信息
         if(v.getId()==R.id.title_updata_btn)
         {
             SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
@@ -124,34 +129,35 @@ public class MainActivity extends Activity implements OnClickListener{
         }
     }
 
+    //根据城市编码更新天气信息
     private void queryWeatherCode(String cityCode) {
+        //和风天气
         final String addressWeather = "https://free-api.heweather.com/s6/weather/forecast?location=CN" + cityCode+"&key=6393f5e642b943748dc79a31822f936e";
         final String addressAir = "https://free-api.heweather.com/s6/air/now?location=CN" + cityCode+"&key=6393f5e642b943748dc79a31822f936e";
         Log.d("myWeather", addressWeather);
         Log.d("myWeather", addressAir);
+        //获取网络天气信息
         new Thread(new Runnable() {
             @Override
             public void run() {
                 TodayWeather todayWeather=null;
-                String jsonDataWeather = getResponseStr(addressWeather);
-                String jsonDataAir = getResponseStr(addressAir);
+                String jsonDataWeather = getResponseStr(addressWeather);//天气信息
+                String jsonDataAir = getResponseStr(addressAir);//空气信息
                 String jsonData="["+jsonDataWeather+","+jsonDataAir+"]";
-                todayWeather=parseJSON(jsonData);
+                todayWeather=parseJSON(jsonData);//解析JSON文件
+                //返回天气信息到主线程
                 if (todayWeather != null) {
                     Log.d("myWeather", todayWeather.toString());
                     Message msg = new Message();
                     msg.what = UPDATE_TODAY_WEATHER;
                     msg.obj = todayWeather;
                     mHandler.sendMessage(msg);
-
                 }
-
-
-
             }
         }).start();
     }
 
+    //通过网络地址获取天气信息文件
     private String getResponseStr(String address)
     {
         HttpURLConnection con = null;
@@ -183,6 +189,7 @@ public class MainActivity extends Activity implements OnClickListener{
     }
 
 
+    //解析JSON文件
     private TodayWeather parseJSON(String jsonData)
     {
         TodayWeather todayWeather = new TodayWeather();
@@ -213,6 +220,7 @@ public class MainActivity extends Activity implements OnClickListener{
         return todayWeather;
     }
 
+    //根据已获得的数据更新天气界面
     void updateTodayWeather(TodayWeather todayWeather) {
         city_name_Tv.setText(todayWeather.getCity() + "天气");
         cityTv.setText(todayWeather.getCity());
@@ -235,6 +243,7 @@ public class MainActivity extends Activity implements OnClickListener{
         Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_SHORT).show();
     }
 
+    //接受选择城市界面传回的城市代码
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             String newCityCode = data.getStringExtra("cityCode");

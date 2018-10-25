@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/city_select_title"
         android:layout_width="match_parent"
         android:layout_height="45dip"
         android:background="@android:color/holo_red_light">
@@ -35,4 +36,10 @@
             android:background="#A71717"
             android:gravity="center" />
     </RelativeLayout>
+
+    <ListView
+        android:id="@+id/city_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/city_select_title"/>
 </RelativeLayout>

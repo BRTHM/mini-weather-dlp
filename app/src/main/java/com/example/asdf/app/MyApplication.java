@@ -33,11 +33,14 @@ public class MyApplication extends Application {
         initCityList();
     }
 
+    //返回应用的引用
     public static MyApplication getInstance() {
         return mApplication;
     }
 
+    //打开数据库
     private CityDB openCityDB() {
+        //创建数据库文件
         String path = "/data" + Environment.getDataDirectory().getAbsolutePath()
                 + File.separator + getPackageName()
                 + File.separator + "databases1"
@@ -56,6 +59,7 @@ public class MyApplication extends Application {
                 Log.i("MyApp", "mkdirs");
             }
             Log.i("MyApp", "db is not exists");
+            //将资源文件的数据写入数据库
             try {
                 InputStream is = getAssets().open("city.db");
                 FileOutputStream fos = new FileOutputStream(db);
@@ -75,10 +79,12 @@ public class MyApplication extends Application {
         return new CityDB(this,path);
     }
 
+    //获取城市列表
     public List<City> getmCityList() {
         return mCityList;
     }
 
+    //初始化城市列表
     private void initCityList()
     {
         mCityList=new ArrayList<City>();
@@ -90,6 +96,7 @@ public class MyApplication extends Application {
         }).start();
     }
 
+    //写入城市列表
     private boolean prepareCityList() {
         mCityList = mCityDB.getAllCity();
         int i = 0;
