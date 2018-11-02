@@ -31,7 +31,7 @@ public class CityDB {
             String allFirstPY = c.getString(c.getColumnIndex("allfirstpy"));
             String firstPY = c.getString(c.getColumnIndex("firstpy"));
             City item = new City(province, city, number, firstPY, allPY, allFirstPY);
-            if(number.substring(5).equals("0100")||(number.substring(7).equals("01")&&number.charAt(4)>'4'))
+            if(number.substring(5).equals("0100")||(number.substring(7).equals("01")&&number.substring(3,4).compareTo("04")>0))
                 list.add(item);
         }
         return list;
